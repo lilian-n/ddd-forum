@@ -48,6 +48,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "express": "^4.18.2",
     "jest-cucumber": "^3.0.1"
   }
 }
