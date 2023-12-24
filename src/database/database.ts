@@ -64,7 +64,7 @@ export function insertData(
   );
 }
 
-export function queryData() {
+export function queryAllUsers() {
   db.all(`SELECT * FROM users`, [], (err, rows: User[]) => {
     if (err) {
       console.log("Error in querying data");
@@ -72,6 +72,19 @@ export function queryData() {
     }
     rows.forEach((row) => {
       console.log(row.firstName + " " + row.lastName);
+    });
+  });
+}
+
+export function getUserById(userId: User["id"]) {
+  return new Promise((resolve, reject) => {
+    db.get(`SELECT * FROM users WHERE id = ?`, [userId], (err, row) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      resolve(row);
     });
   });
 }
