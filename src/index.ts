@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { getUserById } from "./database/database";
+import { getUserByEmail } from "./database/database";
 
 const app = express();
 const port = 3000;
@@ -8,24 +8,31 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
 });
 
-app.get("/:id", (req: Request, res: Response) => {
-  const id = req.params?.id ? parseInt(req.params.id) : null;
+app.get("/user", (req: Request, res: Response) => {
+  const email = req.query.email;
 
-  if (!id) {
-    res.send("Error fetching id");
-    return;
+  if (!email) {
+    return res.status(400).send({
+      error: "Email parameter is required",
+      data: undefined,
+      success: false,
+    });
   }
 
-  getUserById(id)
+  getUserByEmail(email as string)
     .then((user) => {
       if (!user) {
-        res.send("Cannot find user");
-        return;
+        return res
+          .status(404)
+          .send({ error: "User not found", data: undefined, success: false });
       }
-      res.send(user);
+
+      res.json(user);
     })
-    .catch((err) => {
-      res.send(`Get user by id failed, ${err}`);
+    .catch(() => {
+      return res
+        .status(500)
+        .send({ error: "Server error", data: undefined, success: false });
     });
 });
 

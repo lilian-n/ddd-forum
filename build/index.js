@@ -10,23 +10,28 @@ var port = 3000;
 app.get("/", function (req, res) {
     res.send("Hello World!");
 });
-app.get("/:id", function (req, res) {
-    var _a;
-    var id = ((_a = req.params) === null || _a === void 0 ? void 0 : _a.id) ? parseInt(req.params.id) : null;
-    if (!id) {
-        res.send("Error fetching id");
-        return;
+app.get("/user", function (req, res) {
+    var email = req.query.email;
+    if (!email) {
+        return res.status(400).send({
+            error: "Email parameter is required",
+            data: undefined,
+            success: false,
+        });
     }
-    (0, database_1.getUserById)(id)
+    (0, database_1.getUserByEmail)(email)
         .then(function (user) {
         if (!user) {
-            res.send("Cannot find user");
-            return;
+            return res
+                .status(404)
+                .send({ error: "User not found", data: undefined, success: false });
         }
-        res.send(user);
+        res.json(user);
     })
-        .catch(function (err) {
-        res.send("Get user by id failed, ".concat(err));
+        .catch(function () {
+        return res
+            .status(500)
+            .send({ error: "Server error", data: undefined, success: false });
     });
 });
 app.listen(port, function () {
