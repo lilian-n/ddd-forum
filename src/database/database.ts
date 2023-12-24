@@ -72,13 +72,14 @@ export function queryAllUsers() {
     }
     rows.forEach((row) => {
       console.log(row.firstName + " " + row.lastName);
+      console.log(row.email);
     });
   });
 }
 
-export function getUserById(userId: User["id"]) {
+export function getUserByEmail(email: User["email"]) {
   return new Promise((resolve, reject) => {
-    db.get(`SELECT * FROM users WHERE id = ?`, [userId], (err, row) => {
+    db.get(`SELECT * FROM users WHERE email = ?`, [email], (err, row) => {
       if (err) {
         reject(err);
         return;
@@ -88,3 +89,5 @@ export function getUserById(userId: User["id"]) {
     });
   });
 }
+
+queryAllUsers();
