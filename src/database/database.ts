@@ -26,7 +26,6 @@ export function createTable() {
   db.run(
     `CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
             username TEXT UNIQUE NOT NULL,
             firstName TEXT NOT NULL,
@@ -43,8 +42,7 @@ export function createTable() {
   );
 }
 
-export function insertData(
-  name: string,
+export function createUser(
   email: string,
   username: string,
   firstName: string,
@@ -52,16 +50,22 @@ export function insertData(
 ) {
   const password = generatePassword();
 
-  db.run(
-    `INSERT INTO users (name, email, username, firstName, lastName, password) VALUES (?, ?, ?, ?,?,?)`,
-    [name, email, username, firstName, lastName, password],
-    function (err) {
-      if (err) {
-        return console.error("Error in inserting data ", err.message);
+  return new Promise((resolve, reject) => {
+    db.run(
+      `INSERT INTO users (email, username, firstName, lastName, password) VALUES (?,?,?,?,?)`,
+      [email, username, firstName, lastName, password],
+      function (err) {
+        if (err) {
+          console.error("Error in inserting data ", err.message);
+          reject(err);
+          return;
+        }
+
+        console.log(`A row has been inserted with rowid ${this.lastID}`);
+        resolve(this.lastID);
       }
-      console.log(`A row has been inserted with rowid ${this.lastID}`);
-    }
-  );
+    );
+  });
 }
 
 export function queryAllUsers() {
@@ -89,5 +93,3 @@ export function getUserByEmail(email: User["email"]) {
     });
   });
 }
-
-queryAllUsers();
